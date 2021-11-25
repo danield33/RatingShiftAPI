@@ -1,0 +1,22 @@
+{
+  "name": "ratingshiftapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danield33/RatingShiftAPI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danield33/RatingShiftAPI/issues"
+  },
+  "homepage": "https://github.com/danield33/RatingShiftAPI#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
