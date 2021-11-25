@@ -9,5 +9,5 @@ app.listen(port, () => {
 });
 
 app.get('/api', ((req, res) => {
-    res("Hello World")
+    res.send("Hello World")
 }))
