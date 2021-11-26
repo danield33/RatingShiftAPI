@@ -12,7 +12,19 @@ app.listen(port, () => {
     console.log("Starting server on : http://localhost:" + port)
 });
 
+async function wait(time=5000){
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(true)
+        }, time)
+    })
+}
+
 app.get('/api', (async (req, res) => {
+
+    const {text, allImages} = req.query;
+    const loadAll = allImages === 'true'
+    console.log(typeof allImages, allImages)
 
     const browser = await puppeteer.launch({
         'args' : [
@@ -22,13 +34,10 @@ app.get('/api', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + req.query.text)
+    await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
 
-    await page.setViewport({
-        width: 1200,
-        height: 1000
-    });
-    await page.waitForSelector('li', {visible: true})
+    if(loadAll)
+        await autoScroll(page);
 
     const data = await page.evaluate(() => {
 
@@ -89,9 +98,9 @@ app.get('/api', (async (req, res) => {
 async function autoScroll(page) {
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 100;
-            var timer = setInterval(() => {
+            let totalHeight = 0;
+            let distance = 100;
+            let timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
                 totalHeight += distance;
