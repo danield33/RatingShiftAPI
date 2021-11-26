@@ -96,6 +96,7 @@ app.get('/api', (async (req, res) => {
     res.write(JSON.stringify(data));
 
     res.write('HELLO THERE')
+    res.end();
 
 
 }));
