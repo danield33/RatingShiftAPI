@@ -15,7 +15,6 @@ app.listen(port, () => {
 app.get('/api', (async (req, res) => {
 
     const browser = await puppeteer.launch({
-        headless: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox'
