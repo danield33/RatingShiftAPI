@@ -14,7 +14,13 @@ app.listen(port, () => {
 
 app.get('/api', (async (req, res) => {
 
-    const browser = await puppeteer.launch({headless: true});
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
+        ]
+    });
     const page = await browser.newPage();
 
     await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + req.query.text)
