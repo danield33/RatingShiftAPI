@@ -21,12 +21,15 @@ app.get('/api', (async (req, res) => {
 
     console.log(1)
     await page.waitForSelector('li', {visible: true})
+    console.log(2)
     await page.setViewport({
         width: 1200,
-        height: 1000
+        height: 10000
     });
+    console.log(3)
 
-    await autoScroll(page);
+    // await autoScroll(page);
+    console.log(4)
 
     // await page.screenshot({
     //     path: '1.png',
@@ -81,10 +84,13 @@ app.get('/api', (async (req, res) => {
         });
     })
 
-    console.log(data)
+    console.log(data.length)
     await browser.close();
 
-    res.json(data);
+    res.write(JSON.stringify(data));
+
+    res.write('HELLO THERE')
+
 
 }));
 
