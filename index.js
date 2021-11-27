@@ -12,7 +12,7 @@ app.listen(port, () => {
     console.log("Starting server on : http://localhost:" + port)
 });
 
-async function wait(time=5000){
+async function wait(time = 5000) {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve(true)
@@ -26,7 +26,7 @@ app.get('/api', (async (req, res) => {
     const loadAll = allImages === 'true'
 
     const browser = await puppeteer.launch({
-        'args' : [
+        'args': [
             '--no-sandbox',
             '--disable-setuid-sandbox'
         ]
@@ -35,7 +35,7 @@ app.get('/api', (async (req, res) => {
 
     await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
 
-    if(loadAll)
+    if (loadAll)
         await autoScroll(page);
 
     const data = await page.evaluate(() => {
@@ -64,12 +64,12 @@ app.get('/api', (async (req, res) => {
                 });
                 let total = 0;
                 total += counts['fa-star'];
-                total += counts['fa-star-half-o']*.5
+                total += counts['fa-star-half-o'] * .5
                 countArr.push(total);
             });
 
         const imgs = [];
-        $('ul.ember-view.image-set-list').each(function(){
+        $('ul.ember-view.image-set-list').each(function () {
             imgs.push($(this).children().filter('li').find('img'))
         })
         const imgList = Array.from(imgs).map(i => Array.from(i).map(i => i.src))
