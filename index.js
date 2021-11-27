@@ -65,6 +65,8 @@ app.get('/api/get', (async (req, response) => {
             return $(this).find('source').first().attr('srcset').split(' ')[0]
         }).get()
 
+        console.log(artworkUrl512, 'hi');
+
         const appObj = {
             trackId,
             artworkUrl512,
