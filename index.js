@@ -20,7 +20,55 @@ async function wait(time = 5000) {
     })
 }
 
-app.get('/api', (async (req, res) => {
+app.get('/api/get', (async (req, res) => {
+
+    const {link} = req.query || 'https://apps.apple.com/us/app/snapchat/id447188370?ign-mpt=uo%3D4';
+
+    const browser = await puppeteer.launch({
+        'args': [
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
+        ]
+    });
+    const page = await browser.newPage();
+    await page.goto(link)
+
+    await page.screenshot({fullPage: true, path: '2.png'})
+
+    const data = await page.evaluate(() => {
+
+        const icon = $('.ii-icon.iphone-app.app.ios').last().attr('src');
+        const name = $($('span[title]')[1].childNodes)[0].data;
+        const subText = $('span.text-muted');
+        const developer = $(subText[1]).find('a')[0].outerText;
+        const ratingCount = subText[0].innerText;
+        const subtitle = $('div.ii-metadata1-row').get(1).innerText;
+        const description = $('div.preformatted-text').first().text();
+        const formattedPrice = $('a.btn.btn-itunes').text().trim();
+        const price = formattedPrice.toLowerCase() === 'free' ? 0 : Number(formattedPrice.substring(1))
+        const avgRating = $('span.fa').map(function(){
+            return $(this).attr('class')}).toArray().reduce((prev, curr) => {
+            if (curr === 'fa fa-star') {
+                return prev + 1;
+            }else if(curr === 'fa fa-star-half-o')
+                return prev + .5;
+        }, 0);
+
+        const screenShotUrls = $('ul.ember-view li img').map(function(){
+            return $(this).attr('src')
+        }).toArray();
+
+
+
+
+
+    });
+
+    res.send(data)
+
+}))
+
+app.get('/api/search', (async (req, res) => {
 
     const {text, allImages} = req.query;
     const loadAll = allImages === 'true'
@@ -49,7 +97,7 @@ app.get('/api', (async (req, res) => {
         const subtitles = getQuerySelector('.text-muted.ii-iimetadata', i => i.innerText)
         const icons = getQuerySelector('img.media-object', i => i.src)
         const regex = /\/\d+/m
-        const appIDs = $('[title]').parent().parent('a').map(function(){
+        const appIDs = $('[title]').parent().parent('a').map(function () {
             return $(this)[0].href.match(regex)[0].substring(1)
         })
 
@@ -72,11 +120,12 @@ app.get('/api', (async (req, res) => {
                 countArr.push(total);
             });
 
-        const imgs = [];
+        const imgs = []
         $('ul.ember-view.image-set-list').each(function () {
             imgs.push($(this).children().filter('li').find('img'))
         })
         const imgList = Array.from(imgs).map(i => Array.from(i).map(i => i.src))
+        const links = $('a.btn.btn-itunes').map(function(){return this.href})
 
 
         return titles.map((i, index) => {
@@ -86,7 +135,8 @@ app.get('/api', (async (req, res) => {
                 artworkUrl512: icons[index],
                 averageUserRating: countArr[index],
                 screenshotUrls: imgList[index],
-                trackId: appIDs[index]
+                trackId: appIDs[index],
+                link: links[index]
             }
         });
     })
