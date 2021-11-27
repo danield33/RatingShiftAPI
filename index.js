@@ -27,7 +27,7 @@ app.get('/api/get', (async (req, response) => {
         const ratings = $('figcaption.we-rating-count').text().split('•');
         const averageUserRating = ratings[0].trim();
         let userRatingCount = ratings[1].trim().split(' ')[0];
-        userRatingCount = Number(userRatingCount.substring(0, userRatingCount.length-1)) * numbers[userRatingCount.substring(userRatingCount.length-1)]
+        userRatingCount = Number(userRatingCount.substring(0, userRatingCount.length - 1)) * numbers[userRatingCount.substring(userRatingCount.length - 1)]
 
         const formattedPrice = $('li.inline-list__item.inline-list__item--bulleted.app-header__list__item--price').text();
         const price = formattedPrice.toLowerCase() === 'free' ? 0 :
@@ -37,10 +37,10 @@ app.get('/api/get', (async (req, response) => {
         const description = $.html(descriptionP).replace(/(<p.*?>)(.*)(<\/p>)/, '$2').replace(/<br\s*[\/]?>/gi, "\n");
 
         const info = $('dt.information-list__item__term');
-        const infoHeaders = info.map(function(i, el){
+        const infoHeaders = info.map(function (i, el) {
             return ($(this).text())
         }).get();
-        const infoDesc = info.map(function(i, el){
+        const infoDesc = info.map(function (i, el) {
             return ($(this).next().text().trim())
         }).get();
         const obj = {};
@@ -55,13 +55,13 @@ app.get('/api/get', (async (req, response) => {
         const i18n_lang = obj.Languages;
         const lang = i18n_lang[0];
 
-        const unit = obj.Size.substring(obj.Size.length-2);
-        const num = obj.Size.substring(0, obj.Size.length-2);
+        const unit = obj.Size.substring(obj.Size.length - 2);
+        const num = obj.Size.substring(0, obj.Size.length - 2);
         const fileSizeBytesNumeric = Number(num) * fileSize[unit];
         const artistName = obj.Seller;
         const primaryGenreId = obj.Category;
 
-        const screenShotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function(){
+        const screenShotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function () {
             return $(this).find('source').first().attr('srcset').split(' ')[0]
         }).get()
 
@@ -147,7 +147,9 @@ app.get('/api/search', (async (req, res) => {
             imgs.push($(this).children().filter('li').find('img'))
         })
         const imgList = Array.from(imgs).map(i => Array.from(i).map(i => i.src))
-        const links = $('a.btn.btn-itunes').map(function(){return this.href})
+        const links = $('a.btn.btn-itunes').map(function () {
+            return this.href
+        })
 
 
         return titles.map((i, index) => {
