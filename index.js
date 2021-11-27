@@ -24,7 +24,6 @@ app.get('/api', (async (req, res) => {
 
     const {text, allImages} = req.query;
     const loadAll = allImages === 'true'
-    console.log(typeof allImages, allImages)
 
     const browser = await puppeteer.launch({
         'args' : [
