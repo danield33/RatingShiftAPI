@@ -48,6 +48,10 @@ app.get('/api', (async (req, res) => {
         const titles = getQuerySelector('.ii-name', (i) => i.innerText)
         const subtitles = getQuerySelector('.text-muted.ii-iimetadata', i => i.innerText)
         const icons = getQuerySelector('img.media-object', i => i.src)
+        const regex = /\/\d+/m
+        const appIDs = $('[title]').parent().parent('a').map(function(){
+            return $(this)[0].href.match(regex)[0].substring(1)
+        })
 
         let countArr = []
         Array.from($("span.ember-view.star-rating.star-rating"))
@@ -81,7 +85,8 @@ app.get('/api', (async (req, res) => {
                 subtitle: subtitles[index],
                 artworkUrl512: icons[index],
                 averageUserRating: countArr[index],
-                screenshotUrls: imgList[index]
+                screenshotUrls: imgList[index],
+                trackId: appIDs[index]
             }
         });
     })
