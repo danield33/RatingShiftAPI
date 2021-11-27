@@ -13,14 +13,6 @@ app.listen(port, () => {
     console.log("Starting server on : http://localhost:" + port)
 });
 
-async function wait(time = 5000) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve(true)
-        }, time)
-    })
-}
-
 app.get('/api/get', (async (req, response) => {
 
     const trackId = req.query.trackId;
