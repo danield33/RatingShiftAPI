@@ -7,6 +7,7 @@ const fetch = require('node-fetch')
 const puppeteer = require('puppeteer');
 const {numbers, fileSize} = require('./converters')
 const {getListingsPageData} = require('./functions')
+const util = require('util')
 
 app.use(express.static('public'));
 
@@ -29,11 +30,11 @@ app.get('/api/top', (async (req, res) => {
             link = 'https://fnd.io/#/us/charts/iphone/new';
             break;
     }
-    if(!genre)
-        link+='/all'
-    else link+=`/${genre.toLowerCase()}`;
+    if (!genre)
+        link += '/all'
+    else link += `/${genre.toLowerCase()}`;
 
-    if(!link) return res.end();
+    if (!link) return res.end();
 
     const browser = await puppeteer.launch({
         'args': [
@@ -46,7 +47,7 @@ app.get('/api/top', (async (req, res) => {
     await page.goto(link);
     await page.waitForSelector('li', {visible: true})
 
-    if(loadAll === 'true')
+    if (loadAll === 'true')
         await autoScroll(page);
 
     const data = await getListingsPageData(page);
@@ -58,7 +59,6 @@ app.get('/api/top', (async (req, res) => {
 
 app.get('/api/get', (async (req, response) => {//single app scraping
 
-    const trackId = req.query.trackId;
     const link = req.query.link || 'https://apps.apple.com/us/app/snapchat/id447188370?ign-mpt=uo%3D4';
 
     fetch(link).then(async res => {
@@ -67,55 +67,38 @@ app.get('/api/get', (async (req, response) => {//single app scraping
             const data = await res.text();
             const $ = cheerio.load(data)
             const artworkUrl512 = $('picture source').attr('srcset').split(' ')[0]
-            const trackCensoredName = $('h1.product-header__title').text().trim().split('\n')[0]
-            const subtitle = $('h2.product-header__subtitle').text().trim();
-            const ratings = $('figcaption.we-rating-count').text().split('•');
-            const averageUserRating = Number(ratings[0].trim());
-            let userRatingCount = ratings[1].trim().split(' ')[0];
-            if(isNaN(userRatingCount[userRatingCount.length-1]))
-                userRatingCount = Number(userRatingCount.substring(0, userRatingCount.length - 1)) * numbers[userRatingCount.substring(userRatingCount.length - 1)]
-            else userRatingCount = Number(userRatingCount)
-
-            const formattedPrice = $('li.inline-list__item.inline-list__item--bulleted.app-header__list__item--price').text();
-            const price = formattedPrice.toLowerCase() === 'free' ? 0 :
-                Number(formattedPrice.substring(1));
-            const descriptionP = $('div.we-truncate.we-truncate--multi-line.we-truncate--interactive p')
-                .first()
-            const description = $.html(descriptionP).replace(/(<p.*?>)(.*)(<\/p>)/, '$2').replace(/<br\s*[\/]?>/gi, "\n");
-
-            const info = $('dt.information-list__item__term');
-            const infoHeaders = info.map(function () {
-                return ($(this).text())
-            }).get();
-            const infoDesc = info.map(function () {
-                return ($(this).next().text().trim())
-            }).get();
-            const obj = {};
-            infoHeaders.forEach((i, j) => obj[i] = infoDesc[j]);
-            delete obj.Compatibility;
-            delete obj.Location;
-            delete obj.Copyright;
-            delete obj['In-App Purchases']
-            obj.Languages = obj.Languages.split(', ')
-            obj['Age Rating'] = obj['Age Rating'].split('\n')[0]
-
-            const i18n_lang = obj.Languages;
-            const lang = i18n_lang[0];
-
-            if (obj.Size) {
-                const unit = obj.Size.substring(obj.Size.length - 2);
-                const num = obj.Size.substring(0, obj.Size.length - 2);
-                var fileSizeBytesNumeric = Number(num) * fileSize[unit];//first time actually using var with a reason
-            }
-
-            const artistName = obj.Seller;
-            const primaryGenreId = obj.Category;
-            const contentAdvisoryRating = obj['Age Rating'];
-
             const screenshotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function () {
                 return $(this).find('source').first().attr('srcset').split(' ')[0]
             }).get();
+            const formattedPrice = $('li.inline-list__item.inline-list__item--bulleted.app-header__list__item--price').text();
+            const price = formattedPrice.toLowerCase() === 'free' ? 0 :
+                Number(formattedPrice.substring(1));
 
+            const cachedData = $('#shoebox-media-api-cache-apps')
+            const text = cachedData.map(function (inx, el) {
+                return el.children[0].data
+            }).get(0)
+
+            const parsedData = JSON.parse(Object.values(JSON.parse(text))[0]).d[0]
+
+            const {
+                id: trackId,
+                attributes: {
+                    artistName,
+                    name: trackCensoredName,
+                    userRating: {value: averageUserRating, ratingCount: userRatingCount},
+                    fileSizeByDevice: {universal: fileSizeBytesNumeric},
+                    platformAttributes: {ios: {description: {standard: description}, languageList, subtitle}},
+                    contentRatingsBySystem: {appsApple: {name: contentAdvisoryRating}}
+
+                },
+                relationships: {
+                    genres: {data: [primaryGenre]},
+                    reviews: {data: reviews}
+                }
+            } = parsedData
+
+            // return;
             const appObj = {
                 trackId,
                 artworkUrl512,
@@ -127,31 +110,18 @@ app.get('/api/get', (async (req, response) => {//single app scraping
                 fileSizeBytesNumeric,
                 screenshotUrls,
                 trackCensoredName,
-                primaryGenreId,
-                lang,
-                i18n_lang,
+                primaryGenreId: primaryGenre.id,
+                lang: languageList[0],
+                i18n_lang: languageList,
                 subtitle,
                 artistName,
-                contentAdvisoryRating
+                contentAdvisoryRating,
+                reviews: reviews
             };
-
-            ////////////REVIEWS\\\\\\\\\\\\\
-
-            const reviews = $('div.we-customer-review.lockup p').text()
-            console.log(reviews);
-
-            // fetch(link+'#see-all/reviews').then(async reviewRes => {
-            //
-            //     const data = await reviewRes.text();
-            //     const $ = cheerio.load(data)
-            //
-            //     console.log(data)
-            //
-            // })
 
             return response.json(appObj);
 
-        }catch(e){
+        } catch (e) {
             res.json(['fail', e])
         }
     });
