@@ -40,10 +40,10 @@ app.get('/api/get', (async (req, response) => {
             const description = $.html(descriptionP).replace(/(<p.*?>)(.*)(<\/p>)/, '$2').replace(/<br\s*[\/]?>/gi, "\n");
 
             const info = $('dt.information-list__item__term');
-            const infoHeaders = info.map(function (i, el) {
+            const infoHeaders = info.map(function () {
                 return ($(this).text())
             }).get();
-            const infoDesc = info.map(function (i, el) {
+            const infoDesc = info.map(function () {
                 return ($(this).next().text().trim())
             }).get();
             const obj = {};
