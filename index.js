@@ -44,6 +44,7 @@ app.get('/api/top', (async (req, res) => {
     const page = await browser.newPage();
 
     await page.goto(link);
+    await page.waitForSelector('li', {visible: true})
 
     if(loadAll === 'true')
         await autoScroll(page);
@@ -171,7 +172,7 @@ app.get('/api/search', (async (req, res) => {
 
 async function autoScroll(page) {
     await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
             let totalHeight = 0;
             let distance = 100;
             let timer = setInterval(() => {
