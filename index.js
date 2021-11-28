@@ -71,9 +71,11 @@ app.get('/api/get', (async (req, response) => {//single app scraping
             const trackCensoredName = $('h1.product-header__title').text().trim().split('\n')[0]
             const subtitle = $('h2.product-header__subtitle').text().trim();
             const ratings = $('figcaption.we-rating-count').text().split('•');
-            const averageUserRating = ratings[0].trim();
+            const averageUserRating = Number(ratings[0].trim());
             let userRatingCount = ratings[1].trim().split(' ')[0];
-            userRatingCount = Number(userRatingCount.substring(0, userRatingCount.length - 1)) * numbers[userRatingCount.substring(userRatingCount.length - 1)]
+            if(isNaN(userRatingCount[userRatingCount.length-1]))
+                userRatingCount = Number(userRatingCount.substring(0, userRatingCount.length - 1)) * numbers[userRatingCount.substring(userRatingCount.length - 1)]
+            else userRatingCount = Number(userRatingCount)
 
             const formattedPrice = $('li.inline-list__item.inline-list__item--bulleted.app-header__list__item--price').text();
             const price = formattedPrice.toLowerCase() === 'free' ? 0 :
