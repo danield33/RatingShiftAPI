@@ -64,7 +64,6 @@ app.get('/api/get', (async (req, response) => {//single app scraping
     fetch(link).then(async res => {
         try {
 
-
             const data = await res.text();
             const $ = cheerio.load(data)
             const artworkUrl512 = $('picture source').attr('srcset').split(' ')[0]
@@ -115,7 +114,7 @@ app.get('/api/get', (async (req, response) => {//single app scraping
 
             const screenshotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function () {
                 return $(this).find('source').first().attr('srcset').split(' ')[0]
-            }).get()
+            }).get();
 
             const appObj = {
                 trackId,
@@ -136,12 +135,26 @@ app.get('/api/get', (async (req, response) => {//single app scraping
                 contentAdvisoryRating
             };
 
+            ////////////REVIEWS\\\\\\\\\\\\\
+
+            const reviews = $('div.we-customer-review.lockup p').text()
+            console.log(reviews);
+
+            // fetch(link+'#see-all/reviews').then(async reviewRes => {
+            //
+            //     const data = await reviewRes.text();
+            //     const $ = cheerio.load(data)
+            //
+            //     console.log(data)
+            //
+            // })
+
             return response.json(appObj);
+
         }catch(e){
             res.json(['fail', e])
         }
-
-    })
+    });
 
 
 }))
