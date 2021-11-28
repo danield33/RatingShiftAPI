@@ -111,7 +111,7 @@ app.get('/api/get', (async (req, response) => {//single app scraping
             const primaryGenreId = obj.Category;
             const contentAdvisoryRating = obj['Age Rating'];
 
-            const screenShotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function () {
+            const screenshotUrls = $('ul.we-screenshot-viewer__screenshots-list li').map(function () {
                 return $(this).find('source').first().attr('srcset').split(' ')[0]
             }).get()
 
@@ -124,7 +124,7 @@ app.get('/api/get', (async (req, response) => {//single app scraping
                 price,
                 description,
                 fileSizeBytesNumeric,
-                screenShotUrls,
+                screenshotUrls,
                 trackCensoredName,
                 primaryGenreId,
                 lang,
