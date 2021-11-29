@@ -59,7 +59,8 @@ app.get('/api/top', (async (req, res) => {
 
 app.get('/api/get', (async (req, response) => {//single app scraping
 
-    const link = req.query.link || 'https://apps.apple.com/us/app/snapchat/id447188370?ign-mpt=uo%3D4';
+    const {trackId} = req.query;// || 'https://apps.apple.com/us/app/snapchat/id447188370?ign-mpt=uo%3D4';
+    const link = 'https://apps.apple.com/us/app/id'+trackId
 
     fetch(link).then(async res => {
         try {
@@ -98,7 +99,6 @@ app.get('/api/get', (async (req, response) => {//single app scraping
                 }
             } = parsedData
 
-            // return;
             const appObj = {
                 trackId,
                 artworkUrl512,
