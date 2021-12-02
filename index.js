@@ -45,7 +45,7 @@ app.get('/api/top', (async (req, res) => {
     const page = await browser.newPage();
 
     await page.goto(link);
-    await page.waitForSelector('li', {visible: true})
+    await page.waitForSelector('li', {visible: true, timeout: 10000})
 
     if (loadAll === 'true')
         await autoScroll(page);
