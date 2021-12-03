@@ -49,8 +49,6 @@ app.get('/api/top', (async (req, res) => {
         await autoScroll(page);
 
     const data = await getListingsPageData(page);
-
-    // console.log(data)
     res.json(data);
     await browser.close();
 
