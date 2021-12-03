@@ -5,9 +5,7 @@ const cors = require('cors')({origin: true});
 const cheerio = require('cheerio');
 const fetch = require('node-fetch')
 const puppeteer = require('puppeteer');
-const {numbers, fileSize} = require('./converters')
 const {getListingsPageData} = require('./functions')
-const util = require('util')
 
 app.use(express.static('public'));
 
@@ -45,13 +43,14 @@ app.get('/api/top', (async (req, res) => {
     const page = await browser.newPage();
 
     await page.goto(link);
-    // await page.waitForSelector('li', {visible: true, timeout: 10000})
+    await page.waitForSelector('li', {visible: true, timeout: 10000})
 
     if (loadAll === 'true')
         await autoScroll(page);
 
     const data = await getListingsPageData(page);
 
+    // console.log(data)
     res.json(data);
     await browser.close();
 
@@ -143,6 +142,8 @@ app.get('/api/search', (async (req, res) => {
     const page = await browser.newPage();
 
     await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
+
+    await page.waitForSelector('li', {visible: true, timeout: 10000})
 
     if (loadAll)
         await autoScroll(page);
