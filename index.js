@@ -119,7 +119,7 @@ app.get('/api/get', (async (req, response) => {//single app scraping
             return response.json(appObj);
 
         } catch (e) {
-            res.json(['fail', e])
+            response.json(['fail', e])
         }
     });
 
