@@ -43,7 +43,11 @@ app.get('/api/top', (async (req, res) => {
     const page = await browser.newPage();
 
     await page.goto(link);
-    await page.waitForSelector('li', {visible: true, timeout: 10000})
+    try{
+        await page.waitForSelector('li', {visible: true, timeout: 30000})
+    }catch {
+        return res.send("Failed to load data")
+    }
 
     if (loadAll === 'true')
         await autoScroll(page);
@@ -56,7 +60,7 @@ app.get('/api/top', (async (req, res) => {
 
 app.get('/api/get', (async (req, response) => {//single app scraping
 
-    const {trackId} = req.query;// || 'https://apps.apple.com/us/app/snapchat/id447188370?ign-mpt=uo%3D4';
+    const {trackId} = req.query;
     const link = 'https://apps.apple.com/us/app/id'+trackId
 
     fetch(link).then(async res => {
@@ -141,7 +145,11 @@ app.get('/api/search', (async (req, res) => {
 
     await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
 
-    await page.waitForSelector('li', {visible: true, timeout: 10000})
+    try{
+        await page.waitForSelector('li', {visible: true, timeout: 30000})
+    }catch {
+        return res.send("Failed to load data")
+    }
 
     if (loadAll)
         await autoScroll(page);
