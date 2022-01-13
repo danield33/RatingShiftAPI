@@ -1,9 +1,8 @@
 const express = require('express')
 const app = express();
 const port = process.env.PORT || 3000;
-const cors = require('cors')({origin: true});
-const cheerio = require('cheerio');
 const fetch = require('node-fetch')
+const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
 const {getListingsPageData} = require('./functions')
 
@@ -13,21 +12,16 @@ app.listen(port, () => {
     console.log("Starting server on : http://localhost:" + port)
 });
 
+const linkType = {
+    free: 'https://fnd.io/#/us/charts/iphone/top-free',
+    paid: 'https://fnd.io/#/us/charts/iphone/top-paid',
+    new: 'https://fnd.io/#/us/charts/iphone/new'
+}
+
 app.get('/api/top', (async (req, res) => {
 
-    let link;
     const {type, genre, loadAll} = req.query;
-    switch (type) {
-        case 'free':
-            link = 'https://fnd.io/#/us/charts/iphone/top-free';
-            break;
-        case 'paid':
-            link = 'https://fnd.io/#/us/charts/iphone/top-paid';
-            break;
-        case 'new':
-            link = 'https://fnd.io/#/us/charts/iphone/new';
-            break;
-    }
+    let link = linkType[type];
     if (!genre)
         link += '/all'
     else link += `/${genre.toLowerCase()}`;
@@ -130,6 +124,11 @@ app.get('/api/get', (async (req, response) => {//single app scraping
 
 }))
 
+/**
+ * Way to search for apps by name,
+ * Need webcrawling instead of webscraping because data loads after page is viewed
+ */
+
 app.get('/api/search', (async (req, res) => {
 
     const {text, allImages} = req.query;
@@ -161,6 +160,12 @@ app.get('/api/search', (async (req, res) => {
 
 }));
 
+/**
+ * Scrolls through a page to load more content
+ * @param page the page to scroll through
+ * @returns {Promise<void>}
+ */
+
 
 async function autoScroll(page) {
     await page.evaluate(async () => {
@@ -168,7 +173,7 @@ async function autoScroll(page) {
             let totalHeight = 0;
             let distance = 100;
             let timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
+                let scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
                 totalHeight += distance;
 

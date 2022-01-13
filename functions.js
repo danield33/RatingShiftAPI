@@ -1,3 +1,8 @@
+/**
+ * Gets searched information from fnd.io
+ * @param page the page to search for
+ * @returns {Promise<*>}
+ */
 module.exports.getListingsPageData = async (page) => {
     return await page.evaluate(() => {
 
@@ -6,16 +11,16 @@ module.exports.getListingsPageData = async (page) => {
                 .map(mappedFunction)
         }
 
-        const titles = getQuerySelector('.ii-name', (i) => i.innerText)
-        const subtitles = getQuerySelector('.text-muted.ii-iimetadata', i => i.innerText)
-        const icons = getQuerySelector('img.media-object', i => i.src)
+        const titles = getQuerySelector('.ii-name', (i) => i.innerText)//app name
+        const subtitles = getQuerySelector('.text-muted.ii-iimetadata', i => i.innerText)//app subtitle
+        const icons = getQuerySelector('img.media-object', i => i.src)//app icon
         const regex = /\/\d+/m
-        const appIDs = $('[title]').parent().parent('a').map(function () {
+        const appIDs = $('[title]').parent().parent('a').map(function () {//app track id
             return $(this)[0].href.match(regex)[0].substring(1)
         })
 
         let countArr = []
-        Array.from($("span.ember-view.star-rating.star-rating"))
+        Array.from($("span.ember-view.star-rating.star-rating"))//app star ratings
             .map(i => i.childNodes)
             .map(i => Array.from(i)
                 .map(i => i.classList))
@@ -33,7 +38,7 @@ module.exports.getListingsPageData = async (page) => {
                 countArr.push(total);
             });
 
-        const imgs = []
+        const imgs = []//app preview images
         $('ul.ember-view.image-set-list').each(function () {
             imgs.push($(this).children().filter('li').find('img'))
         })
@@ -43,7 +48,7 @@ module.exports.getListingsPageData = async (page) => {
         })
 
 
-        return titles.map((i, index) => {
+        return titles.map((i, index) => {//compile info into array object
             return {
                 trackCensoredName: i,
                 subtitle: subtitles[index],
