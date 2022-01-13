@@ -18,6 +18,9 @@ const linkType = {
     new: 'https://fnd.io/#/us/charts/iphone/new'
 }
 
+/**
+ * Gets top apps by: genre, free, paid, or new
+ */
 app.get('/api/top', (async (req, res) => {
 
     const {type, genre, loadAll} = req.query;
@@ -52,7 +55,7 @@ app.get('/api/top', (async (req, res) => {
 
 }));
 
-app.get('/api/get', (async (req, response) => {//single app scraping
+app.get('/api/get', (async (req, response) => {//single app scraping by app trackID
 
     const {trackId} = req.query;
     const link = 'https://apps.apple.com/us/app/id'+trackId
