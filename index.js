@@ -29,6 +29,7 @@ app.get('/api/top', (async (req, res) => {
         link += '/all'
     else link += `/${genre.toLowerCase()}`;
 
+
     if (!link) return res.end();
 
     const browser = await puppeteer.launch({
@@ -39,12 +40,12 @@ app.get('/api/top', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    await page.goto(link);
-    try{
-        await page.waitForSelector('li', {visible: true, timeout: 30000})
-    }catch {
-        return res.send("Failed to load data")
-    }
+    await page.goto(link , {waitUntil: 'networkidle2'});
+    // try{
+    //     await page.waitForSelector('li', {visible: true, timeout: 30000})
+    // }catch {
+    //     return res.send("Failed to load data")
+    // }
 
     if (loadAll === 'true')
         await autoScroll(page);
@@ -145,13 +146,13 @@ app.get('/api/search', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
+    await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text, {waitUntil: 'networkidle2'})
 
-    try{
-        await page.waitForSelector('li', {visible: true, timeout: 30000})
-    }catch {
-        return res.send("Failed to load data")
-    }
+    // try{
+    //     await page.waitForSelector('li', {visible: true, timeout: 30000})
+    // }catch {
+    //     return res.send("Failed to load data")
+    // }
 
     if (loadAll)
         await autoScroll(page);

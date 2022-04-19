@@ -15,6 +15,7 @@ module.exports.getListingsPageData = async (page) => {
         const subtitles = getQuerySelector('.text-muted.ii-iimetadata', i => i.innerText)//app subtitle
         const icons = getQuerySelector('img.media-object', i => i.src)//app icon
         const regex = /\/\d+/m
+
         const appIDs = $('[title]').parent().parent('a').map(function () {//app track id
             return $(this)[0].href.match(regex)[0].substring(1)
         })
