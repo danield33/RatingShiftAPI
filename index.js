@@ -15,7 +15,7 @@ app.listen(port, () => {
 const linkType = {
     free: 'https://fnd.io/#/us/charts/iphone/top-free',
     paid: 'https://fnd.io/#/us/charts/iphone/top-paid',
-    new: 'https://fnd.io/#/us/charts/iphone/new'
+    "new": 'https://fnd.io/#/us/charts/iphone/new'
 }
 
 /**
@@ -40,12 +40,13 @@ app.get('/api/top', (async (req, res) => {
     });
     const page = await browser.newPage();
 
+    console.log(link)
     await page.goto(link , {waitUntil: 'networkidle2'});
-    // try{
-    //     await page.waitForSelector('li', {visible: true, timeout: 30000})
-    // }catch {
-    //     return res.send("Failed to load data")
-    // }
+    try{
+        await page.waitForSelector('li', {visible: true, timeout: 30000})
+    }catch {
+        return res.send("Failed to load data")
+    }
 
     if (loadAll === 'true')
         await autoScroll(page);
