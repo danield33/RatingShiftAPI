@@ -40,7 +40,6 @@ app.get('/api/top', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    console.log(link)
     await page.goto(link , {waitUntil: 'networkidle2'});
     try{
         await page.waitForSelector('li', {visible: true, timeout: 30000})
