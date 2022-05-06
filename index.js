@@ -18,6 +18,15 @@ const linkType = {
     "new": 'https://fnd.io/#/us/charts/iphone/new'
 }
 
+const goToPage = async (page, url) => {
+    try{
+        await page.goto(url, {waitUntil: 'networkidle2'});
+        return true;
+    }catch{
+        return false;
+    }
+}
+
 /**
  * Gets top apps by: genre, free, paid, or new
  */
@@ -40,10 +49,19 @@ app.get('/api/top', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    await page.goto(link , {waitUntil: 'networkidle2'});
+    console.log(link)
+    let success = false, attempts = 0;
+    while(success === false && attempts < 5){
+        success = await goToPage(page, link)
+        attempts++;
+        if(!success){
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+    }
     try{
         await page.waitForSelector('li', {visible: true, timeout: 30000})
-    }catch {
+    }catch (e){
+        console.error(e)
         return res.send("Failed to load data")
     }
 
@@ -146,7 +164,16 @@ app.get('/api/search', (async (req, res) => {
     });
     const page = await browser.newPage();
 
-    await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text, {waitUntil: 'networkidle2'})
+
+    let success = false, attempts = 0;
+    while(success === false && attempts < 3){
+        success = await goToPage(page, 'https://fnd.io/#/us/search?mediaType=iphone&term=' + text)
+        attempts++;
+        if(success === false){
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+    }
+    // await page.goto('https://fnd.io/#/us/search?mediaType=iphone&term=' + text, {waitUntil: 'networkidle2'})
 
     // try{
     //     await page.waitForSelector('li', {visible: true, timeout: 30000})
